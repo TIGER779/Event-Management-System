@@ -365,4 +365,4 @@ FodyWeavers.xsd
 .env
 
 # Emails saved by Email:Mode = PickupDirectory
-EventHub/App_Data/
+AreebTechnologyTask/App_Data/

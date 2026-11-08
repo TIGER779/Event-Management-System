@@ -74,7 +74,7 @@ Nothing else is needed: no .NET SDK and no SQL Server.
 
 ```bash
 git clone https://github.com/TIGER779/Event-Management-System.git
-cd Event-Management-System/EventHub
+cd Event-Management-System/AreebTechnologyTask
 cp .env.example .env          # then open .env and set your own DB_PASSWORD and JWT_KEY
 docker compose up --build
 ```
@@ -103,7 +103,7 @@ Requirements: [.NET 9 SDK](https://dotnet.microsoft.com/download) and SQL Server
 
 ```bash
 git clone https://github.com/TIGER779/Event-Management-System.git
-cd Event-Management-System/EventHub
+cd Event-Management-System/AreebTechnologyTask
 dotnet run
 ```
 
