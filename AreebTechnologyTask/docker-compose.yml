@@ -26,12 +26,15 @@ services:
       # A real server must use HTTPS (e.g. a reverse proxy in front of this container) and keep this true.
       Auth__CookieRequiresHttps: "false"
       DataProtection__KeysPath: /app/keys
-      # Emails go to Mailpit (see the "mail" service).
+      # Emails go to Mailpit (see the "mail" service) unless the SMTP_* values in .env point to a real
+      # mail server such as Gmail.
       Email__Mode: Smtp
-      Email__Smtp__Host: mail
-      Email__Smtp__Port: "1025"
-      Email__Smtp__Security: None
-      Email__FromAddress: tickets@eventbooking.local
+      Email__Smtp__Host: "${SMTP_HOST:-mail}"
+      Email__Smtp__Port: "${SMTP_PORT:-1025}"
+      Email__Smtp__Security: "${SMTP_SECURITY:-None}"
+      Email__Smtp__Username: "${SMTP_USERNAME:-}"
+      Email__Smtp__Password: "${SMTP_PASSWORD:-}"
+      Email__FromAddress: "${EMAIL_FROM:-tickets@eventbooking.local}"
       Email__FromName: Event Booking
       Email__PublicBaseUrl: http://localhost:5025
     volumes:

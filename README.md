@@ -163,6 +163,7 @@ Where emails go is set in the `Email` section of `appsettings.json`:
 | Setup | How to read the emails |
 |-------|------------------------|
 | Docker (`docker compose up`) | Mailpit inbox at http://localhost:8025 (already configured) |
+| Docker with real emails | Fill in the `SMTP_*` and `EMAIL_FROM` lines in `.env`, then `docker compose up -d` |
 | `dotnet run` (default) | Start only Mailpit with `docker compose up -d mail`, then open http://localhost:8025 |
 | `dotnet run` without Docker | `dotnet user-secrets set "Email:Mode" "PickupDirectory"`: emails are saved as `.eml` files in `App_Data/emails` |
 
