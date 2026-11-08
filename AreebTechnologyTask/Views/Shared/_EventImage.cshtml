@@ -1,0 +1,41 @@
+@model EventImageModel
+@inject IWebHostEnvironment Env
+@inject Microsoft.AspNetCore.Mvc.ViewFeatures.IFileVersionProvider FileVersions
+@{
+    var src = Model.Event.DisplayImageUrl;
+
+    // A local image such as /Images/food-expo.jpg can have smaller WebP copies next to it
+    // (food-expo-400.webp, food-expo-800.webp). When they exist, the browser picks the best one;
+    // otherwise (e.g. an image an admin added later, or an external URL) the original is used.
+    string? webpSrcSet = null;
+    if (src.StartsWith("/Images/", StringComparison.OrdinalIgnoreCase) && !src.Contains('?'))
+    {
+        var folder = src.Substring(0, src.LastIndexOf('/'));
+        var baseName = System.IO.Path.GetFileNameWithoutExtension(src);
+        var candidates = new List<string>();
+        foreach (var width in new[] { 400, 800 })
+        {
+            var path = $"{folder}/{baseName}-{width}.webp";
+            if (Env.WebRootFileProvider.GetFileInfo(path).Exists)
+            {
+                candidates.Add($"{FileVersions.AddFileVersionToPath(Context.Request.PathBase, path)} {width}w");
+            }
+        }
+        if (candidates.Count > 0)
+        {
+            webpSrcSet = string.Join(", ", candidates);
+        }
+    }
+}
+<picture class="d-block">
+    @if (webpSrcSet != null)
+    {
+        <source type="image/webp" srcset="@webpSrcSet" sizes="@Model.Sizes" />
+    }
+    <img src="@src" asp-append-version="true" alt="@Model.Event.Name"
+         class="@Model.CssClass" style="@Model.Style"
+         width="800" height="533" decoding="async"
+         loading="@(Model.Lazy ? "lazy" : "eager")"
+         fetchpriority="@(Model.HighPriority ? "high" : "auto")"
+         onerror="this.onerror=null;this.parentElement.querySelector('source')?.remove();this.src='/Images/placeholder.svg';" />
+</picture>
