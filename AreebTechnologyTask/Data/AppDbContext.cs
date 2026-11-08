@@ -8,26 +8,13 @@ namespace AreebTechnologyTask.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Booking> Bookings { get; set; }
-        public AppDbContext() : base()
+
+        // The connection string and provider are configured in Program.cs (AddDbContext),
+        // from the "ConnectionStrings:Default" setting.
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            var connectionString = config.GetSection("constr").Value;
-
-            optionsBuilder.UseSqlServer(connectionString);
-
-            
         }
 
-        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

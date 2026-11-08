@@ -28,13 +28,13 @@ The Event Booking System is a web application designed to facilitate the booking
 ## Frontend Information
 
 -   **Technologies Used**: Razor Pages (CSHTML), CSS, JavaScript
--   **Port**: Shares the same ports as the backend: HTTP on port 5024 and HTTPS on port 5025
+-   **Port**: Served by the backend at https://localhost:5025
 
 ## Backend Information
 
 -   **Technologies Used**: ASP.NET Core, Entity Framework Core, SQL Server
--   **Port**: Runs on port 5024 for HTTP and 5025 for HTTPS
--   **Database**: SQL Server with connection string configured in `appsettings.json`
+-   **Port**: https://localhost:5025
+-   **Database**: SQL Server. The database is created, migrated and filled with sample data automatically on first start
 
 ## Technologies Used
 
@@ -56,47 +56,50 @@ The Event Booking System is a web application designed to facilitate the booking
 -   Microsoft.VisualStudio.Web.CodeGeneration.Design 9.0.0
 -   Portable.BouncyCastle 1.9.0
 
-## Installation Steps
+## How to Run
 
-1.  **Clone the Repository**:
-    ```bash
-    git clone <repository-url>
-    ```
-2.  **Install dotnet-ef Tool**:
-    ```bash
-    dotnet tool install --global dotnet-ef
-    ```
-3.  **Change Server Name in appsettings**:
+### Option 1: Visual Studio / `dotnet run` (Windows)
 
-    -   Open `appsettings.json` and update the `Server` value in the `constr` key to match your SQL Server instance.
+Requirements: [.NET 9 SDK](https://dotnet.microsoft.com/download) and SQL Server **LocalDB** (installed with Visual Studio).
 
-4.  **Create the Database**:
+```bash
+git clone https://github.com/TIGER779/AreebTechnologyTask.git
+cd AreebTechnologyTask/AreebTechnologyTask
+dotnet run
+```
 
-    -   Create the database in SQL Server with the following command:
+Open https://localhost:5025. On the first start the app creates the `Event_Booking_System` database,
+applies the migrations and adds sample data. No SQL scripts or manual steps are needed.
 
-    ```sql
-    CREATE DATABASE Event_Booking_System
-    ```
+#### Using your own SQL Server instead of LocalDB
 
-5.  **Download NuGet Packages**:
-    -   Restore the necessary NuGet packages using the following command:
-    ```bash
-    dotnet restore
-    ```
-6.  **Migration Step**:
-    -   Apply migrations to set up the database schema:
-    ```bash
-    dotnet ef database update
-    ```
-7.  **Insert Data into Database**:
-    -   Use the provided `database.sql` file to insert initial data into the database.
-8.  **Build the Project**:
-    -   Compile the project using:
-    ```bash
-    dotnet build
-    ```
-9.  **Run the Project**:
-    -   Start the application with:
-    ```bash
-    dotnet run
-    ```
+Set your connection string with [user-secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets)
+(stored on your PC only, never committed):
+
+```bash
+dotnet user-secrets set "ConnectionStrings:Default" "Server=.\SQLEXPRESS;Database=Event_Booking_System;Trusted_Connection=True;TrustServerCertificate=True"
+```
+
+An existing database created by the migrations keeps its data; sample data is only added to an empty database.
+
+### Sample accounts
+
+| Role  | Email               | Password   |
+|-------|---------------------|------------|
+| Admin | `admin@example.com` | `admin123` |
+| User  | `john@example.com`  | `john123`  |
+| User  | `jane@example.com`  | `jane123`  |
+
+The sample accounts use `example.com`, a domain reserved for examples, so no email can reach a real person.
+Register with your own email address to receive emails yourself.
+
+### Database changes (developers)
+
+After changing a model, add a migration; it is applied automatically on the next start:
+
+```bash
+dotnet tool install --global dotnet-ef   # once
+dotnet ef migrations add <Name>
+```
+
+`database.sql` is no longer needed. It is kept only as a reference for manual setups.

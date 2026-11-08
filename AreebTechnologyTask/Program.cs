@@ -1,6 +1,7 @@
 using System.Text;
 using AreebTechnologyTask.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using AreebTechnologyTask.Enums;
 
@@ -8,12 +9,20 @@ namespace AreebTechnologyTask
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add DbContext to the container
-            builder.Services.AddDbContext<AppDbContext>();
+            // Database. "ConnectionStrings:Default" comes from (later ones win):
+            //   appsettings.json      -> LocalDB, works on any Windows machine with Visual Studio
+            //   user-secrets          -> your own SQL Server (dotnet user-secrets set "ConnectionStrings:Default" "...")
+            //   environment variables -> ConnectionStrings__Default, used by docker-compose.yml
+            var connectionString = builder.Configuration.GetConnectionString("Default")
+                ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Default' is not configured.");
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(connectionString, sql =>
+                    // Retries briefly if SQL Server is not reachable yet (e.g. its container is still starting).
+                    sql.EnableRetryOnFailure(maxRetryCount: 6, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null)));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -65,6 +74,9 @@ namespace AreebTechnologyTask
 
             var app = builder.Build();
 
+            // Create/upgrade the database and add sample data to an empty one.
+            await DbSeeder.MigrateAndSeedAsync(app.Services);
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -112,7 +124,7 @@ namespace AreebTechnologyTask
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

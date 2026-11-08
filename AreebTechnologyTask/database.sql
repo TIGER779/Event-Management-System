@@ -1,3 +1,7 @@
+-- OPTIONAL / REFERENCE ONLY.
+-- The app now creates the database, applies migrations and adds sample data automatically
+-- on first start (see Data/DbSeeder.cs and the README). Run this script only for a manual setup.
+
 use Event_Booking_System;
 GO
 
