@@ -13,7 +13,11 @@
 		<div class="row justify-content-center">
 			<div class="col-lg-8 mx-auto">
 				<div class="card shadow-lg rounded-4 border-0">
-					<img src="@Model.DisplayImageUrl" onerror="this.onerror=null;this.src='/Images/placeholder.svg';" alt="@Model.Name" class="card-img-top rounded-top-4" style="max-height: 500px; object-fit: cover; width: 100%;" />
+					<partial name="_EventImage" model="@(new EventImageModel(Model,
+						CssClass: "card-img-top rounded-top-4",
+						Style: "max-height: 500px; object-fit: cover; width: 100%;",
+						Sizes: "(min-width: 992px) 66vw, 100vw",
+						HighPriority: true))" />
 					<div class="card-body p-4">
 
 						<h3 class="card-title text-center mb-3">@Model.Name</h3>

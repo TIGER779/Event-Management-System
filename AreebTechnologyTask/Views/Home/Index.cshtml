@@ -27,15 +27,28 @@
 }
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
+    @{ var cardIndex = 0; }
     @foreach (var evt in Model)
     {
+        // The first image is the page's main (LCP) image, so it is fetched first.
+        // The first 3 cards can be on screen at load (one row on desktop, two cards on phones),
+        // so only the cards after them are lazy-loaded.
+        var index = cardIndex++;
         <div class="col">
-            <a href="@Url.Action("Details", "Home", new { id = evt.Id })" style="text-decoration: none; color: inherit;">
+            @* The whole card is clickable through the title's "stretched-link".
+               Buttons/links inside the card sit above it (position-relative + z-index),
+               so no interactive element is nested inside another one. *@
                 <div class="card h-100 shadow-sm">
-                    <img src="@evt.DisplayImageUrl" class="card-img-top" alt="@evt.Name" style="height:200px; object-fit:cover;"
-                         onerror="this.onerror=null;this.src='/Images/placeholder.svg';">
+                    <partial name="_EventImage" model="@(new EventImageModel(evt,
+                        CssClass: "card-img-top",
+                        Style: "height:200px; object-fit:cover;",
+                        Sizes: "(min-width: 768px) 33vw, 100vw",
+                        HighPriority: index == 0,
+                        Lazy: index >= 3))" />
                     <div class="card-body">
-                        <h5 class="card-title">@evt.Name</h5>
+                        <h3 class="card-title h5">
+                            <a href="@Url.Action("Details", "Home", new { id = evt.Id })" class="stretched-link text-reset text-decoration-none">@evt.Name</a>
+                        </h3>
                         <p class="card-text">
                             <strong>Date:</strong> @evt.Date.ToShortDateString()<br />
                             <strong>Venue:</strong> @evt.Venue<br />
@@ -48,7 +61,7 @@
                         }
                         else if (isLoggedIn && userRole != "Admin")
                         {
-                            <form method="post" action="@Url.Action("BookEvent", "Home")" class="book-form" onclick="event.stopPropagation();">
+                            <form method="post" action="@Url.Action("BookEvent", "Home")" class="book-form position-relative" style="z-index: 2;">
                                 <input type="hidden" name="eventId" value="@evt.Id" />
                                 <button type="submit" class="btn btn-primary w-100">Book Now</button>
                             </form>
@@ -56,11 +69,10 @@
                         else
                         {
                             <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@Context.Request.Path"
-                               class="btn btn-outline-secondary w-100" onclick="event.stopPropagation();">Login to Book</a>
+                               class="btn btn-outline-secondary w-100 position-relative" style="z-index: 2;">Login to Book</a>
                         }
                     </div>
                 </div>
-            </a>
         </div>
     }
 </div>

@@ -1,7 +1,18 @@
+/* Cabin, self-hosted (SIL Open Font License, see /lib/cabin/OFL.txt).
+   One variable font file covers weights 400-700 for Latin text. */
+@font-face {
+    font-family: 'Cabin';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('../lib/cabin/cabin-latin-variable.woff2?v=35') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
     /* Primary Colors */
     --primary-color: #2C3E50;    
-    --secondary-color: #3498DB;    
+    --secondary-color: #1F6FA8;    /* darker blue: 5.4:1 with white text (WCAG AA) */
     --accent-color: #E74C3C;       
     
     /* Neutral Colors */
@@ -10,8 +21,8 @@
     --text-light: #7F8C8D;         
     
     /* Success/Error Colors */
-    --success-color: #2ECC71;      
-    --error-color: #E74C3C;        
+    --success-color: #1E7E45;      /* 5.1:1 with white text */
+    --error-color: #C0392B;        /* 5.4:1 with white text */
     --warning-color: #F1C40F;      
     
     /* Spacing */

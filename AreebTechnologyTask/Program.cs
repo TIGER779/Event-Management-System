@@ -74,13 +74,33 @@ namespace AreebTechnologyTask
 
             app.UseHttpsRedirection();
 
-            // Serve any file in wwwroot (e.g. event images added after the build).
-            // MapStaticAssets() only knows about files that existed at build time.
-            app.UseStaticFiles();
+            // Files requested with a content-hash version (?v=..., added by asp-append-version)
+            // never change at that URL, so browsers may cache them for a year.
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Query.ContainsKey("v") && Path.HasExtension(context.Request.Path.Value))
+                {
+                    context.Response.OnStarting(() =>
+                    {
+                        if (context.Response.StatusCode == StatusCodes.Status200OK ||
+                            context.Response.StatusCode == StatusCodes.Status304NotModified)
+                        {
+                            context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+                        }
+                        return Task.CompletedTask;
+                    });
+                }
+                await next();
+            });
 
             app.UseSession();
 
             app.UseRouting();
+
+            // Fallback for files added to wwwroot after the build (e.g. new event images).
+            // Placed after UseRouting, it only serves files that MapStaticAssets() has no endpoint for,
+            // so build-time assets still get MapStaticAssets' compression and ETags.
+            app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();
