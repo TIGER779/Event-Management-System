@@ -58,7 +58,37 @@ The Event Booking System is a web application designed to facilitate the booking
 
 ## How to Run
 
-### Option 1: Visual Studio / `dotnet run` (Windows)
+### Option 1 (recommended): Docker, on Windows, macOS or Linux
+
+Requirements: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine with Compose) and about 2 GB of free RAM.
+Nothing else is needed: no .NET SDK and no SQL Server.
+
+```bash
+git clone https://github.com/TIGER779/AreebTechnologyTask.git
+cd AreebTechnologyTask/AreebTechnologyTask
+cp .env.example .env          # then open .env and set your own DB_PASSWORD and JWT_KEY
+docker compose up --build
+```
+
+| What | Where |
+|------|-------|
+| Website | http://localhost:5025 |
+| Email inbox (every email the app sends) | http://localhost:8025 |
+
+`docker compose up` starts three containers:
+
+-   **web**: the ASP.NET Core app, built by the `Dockerfile` and running as a non-root user
+-   **db**: SQL Server 2022 (Express). The app waits until it is healthy, then creates the database and sample data
+-   **mail**: [Mailpit](https://mailpit.axllent.org/), a fake mail server that catches all emails so none reach a real address
+
+The first start downloads the SQL Server image (about 1.5 GB) and takes a few minutes; later starts take seconds.
+Data is kept in Docker volumes. `docker compose down` stops everything, and `docker compose down -v` also deletes the database.
+
+> On Apple-silicon Macs (M1-M4), SQL Server runs through Docker's Intel emulation (Rosetta): it works, but starts more slowly.
+> The container serves plain HTTP for local use only. A real deployment must put HTTPS in front of it and
+> remove `Auth__CookieRequiresHttps: "false"` from `docker-compose.yml`.
+
+### Option 2: Visual Studio / `dotnet run` (Windows)
 
 Requirements: [.NET 9 SDK](https://dotnet.microsoft.com/download) and SQL Server **LocalDB** (installed with Visual Studio).
 

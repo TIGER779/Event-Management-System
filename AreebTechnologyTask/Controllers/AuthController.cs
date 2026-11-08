@@ -70,10 +70,13 @@ namespace AreebTechnologyTask.Controllers
 
             string token = CreateToken(user, out DateTime expiresAt);
 
+            // The login cookie is HTTPS-only. "Auth:CookieRequiresHttps" = false relaxes this for plain-HTTP
+            // local setups (docker-compose.yml); never turn it off on a real server.
+            var cookieRequiresHttps = _configuration.GetValue("Auth:CookieRequiresHttps", true);
             Response.Cookies.Append("JwtToken", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
+                Secure = cookieRequiresHttps || Request.IsHttps,
                 SameSite = SameSiteMode.Strict,
                 Expires = expiresAt
             });

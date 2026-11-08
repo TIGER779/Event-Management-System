@@ -1,6 +1,7 @@
 using System.Text;
 using AreebTechnologyTask.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using AreebTechnologyTask.Enums;
@@ -23,6 +24,17 @@ namespace AreebTechnologyTask
                 options.UseSqlServer(connectionString, sql =>
                     // Retries briefly if SQL Server is not reachable yet (e.g. its container is still starting).
                     sql.EnableRetryOnFailure(maxRetryCount: 6, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null)));
+
+            // Keys that protect anti-forgery tokens and TempData cookies. By default they live in memory
+            // (or the user profile); in a container they would be lost on every restart, so docker-compose.yml
+            // sets DataProtection__KeysPath to a folder on a Docker volume.
+            var keysPath = builder.Configuration["DataProtection:KeysPath"];
+            if (!string.IsNullOrWhiteSpace(keysPath))
+            {
+                builder.Services.AddDataProtection()
+                    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
+                    .SetApplicationName("AreebTechnologyTask");
+            }
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
