@@ -13,7 +13,7 @@
 		<div class="row justify-content-center">
 			<div class="col-lg-8 mx-auto">
 				<div class="card shadow-lg rounded-4 border-0">
-					<img src="/Images/@Model.ImageUrl" alt="@Model.Name" class="card-img-top rounded-top-4" style="max-height: 500px; object-fit: cover; width: 100%;" />
+					<img src="@Model.DisplayImageUrl" onerror="this.onerror=null;this.src='/Images/placeholder.svg';" alt="@Model.Name" class="card-img-top rounded-top-4" style="max-height: 500px; object-fit: cover; width: 100%;" />
 					<div class="card-body p-4">
 
 						<h3 class="card-title text-center mb-3">@Model.Name</h3>

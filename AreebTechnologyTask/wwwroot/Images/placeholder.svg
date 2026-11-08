@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#e9ecef"/>
+  <g fill="none" stroke="#adb5bd" stroke-width="16" stroke-linejoin="round">
+    <rect x="460" y="290" width="280" height="200" rx="16"/>
+    <path d="M470 470 L560 380 L630 450 L670 410 L730 470"/>
+  </g>
+  <circle cx="670" cy="345" r="22" fill="#adb5bd"/>
+  <text x="600" y="560" font-family="Segoe UI, Arial, sans-serif" font-size="36" fill="#6c757d" text-anchor="middle">Event image</text>
+</svg>

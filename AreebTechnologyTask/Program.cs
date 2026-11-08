@@ -74,6 +74,10 @@ namespace AreebTechnologyTask
 
             app.UseHttpsRedirection();
 
+            // Serve any file in wwwroot (e.g. event images added after the build).
+            // MapStaticAssets() only knows about files that existed at build time.
+            app.UseStaticFiles();
+
             app.UseSession();
 
             app.UseRouting();
