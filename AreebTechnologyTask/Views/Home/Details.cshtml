@@ -1,6 +1,16 @@
 ﻿@model Event
 @{
-	ViewData["Title"] = "Details";
+	ViewData["Title"] = Model.Name;
+
+	// Search-result snippet (search engines show about 160 characters): name, date and venue,
+	// then the start of the event description, cut at a word.
+	var summary = (Model.Description ?? string.Empty).Trim();
+	if (summary.Length > 100)
+	{
+		var cut = summary.LastIndexOf(' ', 97);
+		summary = summary.Substring(0, cut > 0 ? cut : 97).TrimEnd(',', '.', ';', ':', '!', '-') + "...";
+	}
+	ViewData["Description"] = $"{Model.Name} on {Model.Date:MMMM d, yyyy} at {Model.Venue}. {summary}";
 	var bookedEventIds = ViewBag.BookedEventIds as List<int> ?? new List<int>();
 	var token = Context.Request.Cookies["JwtToken"];
 	bool isLoggedIn = !string.IsNullOrEmpty(token);
