@@ -1,14 +1,14 @@
 using System.Text;
-using AreebTechnologyTask.Data;
+using EventHub.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using AreebTechnologyTask.Enums;
-using AreebTechnologyTask.Services.Email;
-using AreebTechnologyTask.Services.Tickets;
+using EventHub.Enums;
+using EventHub.Services.Email;
+using EventHub.Services.Tickets;
 
-namespace AreebTechnologyTask
+namespace EventHub
 {
     public class Program
     {
@@ -35,7 +35,7 @@ namespace AreebTechnologyTask
             {
                 builder.Services.AddDataProtection()
                     .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
-                    .SetApplicationName("AreebTechnologyTask");
+                    .SetApplicationName("EventHub");
             }
 
             // Add services to the container.

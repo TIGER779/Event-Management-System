@@ -1,4 +1,4 @@
-﻿namespace AreebTechnologyTask.Enums
+﻿namespace EventHub.Enums
 {
     public enum UserRole
     {

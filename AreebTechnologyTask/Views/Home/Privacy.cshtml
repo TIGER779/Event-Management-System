@@ -1,5 +1,8 @@
-﻿@{
+﻿@inject Microsoft.Extensions.Options.IOptions<EventHub.Services.Email.EmailOptions> EmailSettings
+@{
     ViewData["Title"] = "Privacy Policy";
+    // The contact address is the one the site sends tickets from (Email:FromAddress / EMAIL_FROM).
+    var contactEmail = EmailSettings.Value.FromAddress;
 }
 
 <div class="container py-5">
@@ -8,7 +11,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h2 class="h4 mb-3">1. Information We Collect</h2>
-            <p>When you use our Event Booking System, we collect:</p>
+            <p>When you use EventHub, we collect:</p>
             <ul>
                 <li><strong>Personal Information:</strong> Your name, email address, phone number, and address for registration</li>
                 <li><strong>Event Bookings:</strong> Details of events you book, including event name, date, venue, and booking history</li>
@@ -35,7 +38,7 @@
             </ul>
 
             <h2 class="h4 mb-3 mt-4">4. Your Rights</h2>
-            <p>As a user of our Event Booking System, you can:</p>
+            <p>As a user of EventHub, you can:</p>
             <ul>
                 <li>View and manage your event bookings</li>
                 <li>Update your personal information</li>
@@ -73,7 +76,7 @@
             <h2 class="h4 mb-3 mt-4">8. Contact Us</h2>
             <p>For privacy-related inquiries, please contact:</p>
             <ul>
-                <li>Email: support@areebtechnology.com</li>
+                <li>Email: <a href="mailto:@contactEmail">@contactEmail</a></li>
                 <li>Phone: +20 111 477 8562</li>
                 <li>Address: Maadi, Cairo, Egypt</li>
             </ul>

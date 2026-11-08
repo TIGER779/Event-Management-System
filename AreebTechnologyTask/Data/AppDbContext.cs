@@ -1,7 +1,7 @@
-﻿using AreebTechnologyTask.Models;
+﻿using EventHub.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AreebTechnologyTask.Data
+namespace EventHub.Data
 {
     public class AppDbContext : DbContext
     {

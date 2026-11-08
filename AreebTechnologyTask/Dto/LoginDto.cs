@@ -1,4 +1,4 @@
-﻿namespace AreebTechnologyTask.Dto
+﻿namespace EventHub.Dto
 {
     public class LoginDto
     {

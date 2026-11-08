@@ -1,8 +1,8 @@
-using AreebTechnologyTask.Enums;
-using AreebTechnologyTask.Models;
+using EventHub.Enums;
+using EventHub.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AreebTechnologyTask.Data
+namespace EventHub.Data
 {
     /// <summary>
     /// Creates/updates the database schema and fills an empty database with sample data,

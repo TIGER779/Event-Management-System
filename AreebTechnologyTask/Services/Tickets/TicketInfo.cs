@@ -1,6 +1,6 @@
-using AreebTechnologyTask.Models;
+using EventHub.Models;
 
-namespace AreebTechnologyTask.Services.Tickets
+namespace EventHub.Services.Tickets
 {
     /// <summary>Everything printed on a ticket (email, PDF, calendar file and the ticket image).</summary>
     public record TicketInfo(

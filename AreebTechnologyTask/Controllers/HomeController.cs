@@ -1,14 +1,14 @@
 using System.Diagnostics;
 using System.Security.Claims;
-using AreebTechnologyTask.Data;
-using AreebTechnologyTask.Enums;
-using AreebTechnologyTask.Models;
-using AreebTechnologyTask.Services.Tickets;
+using EventHub.Data;
+using EventHub.Enums;
+using EventHub.Models;
+using EventHub.Services.Tickets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace AreebTechnologyTask.Controllers
+namespace EventHub.Controllers
 {
     public class HomeController : Controller
     {

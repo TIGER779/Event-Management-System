@@ -1,16 +1,16 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using AreebTechnologyTask.Data;
-using AreebTechnologyTask.Dto;
-using AreebTechnologyTask.Enums;
-using AreebTechnologyTask.Models;
+using EventHub.Data;
+using EventHub.Dto;
+using EventHub.Enums;
+using EventHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 
-namespace AreebTechnologyTask.Controllers
+namespace EventHub.Controllers
 {
     [Authorize]
     public class AuthController : Controller

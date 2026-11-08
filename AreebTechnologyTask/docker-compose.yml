@@ -9,13 +9,13 @@
 # Stop with Ctrl+C, or `docker compose down`. Data stays in Docker volumes;
 # `docker compose down -v` also deletes the database.
 
-name: event-booking
+name: eventhub
 
 services:
   # ---- The website (built from ./Dockerfile) ----
   web:
     build: .
-    image: event-booking-web
+    image: eventhub-web
     ports:
       - "5025:8080"
     environment:
@@ -34,8 +34,8 @@ services:
       Email__Smtp__Security: "${SMTP_SECURITY:-None}"
       Email__Smtp__Username: "${SMTP_USERNAME:-}"
       Email__Smtp__Password: "${SMTP_PASSWORD:-}"
-      Email__FromAddress: "${EMAIL_FROM:-tickets@eventbooking.local}"
-      Email__FromName: Event Booking
+      Email__FromAddress: "${EMAIL_FROM:-tickets@eventhub.local}"
+      Email__FromName: EventHub
       Email__PublicBaseUrl: http://localhost:5025
     volumes:
       - keys:/app/keys

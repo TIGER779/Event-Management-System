@@ -1,6 +1,6 @@
 using MimeKit;
 
-namespace AreebTechnologyTask.Services.Email
+namespace EventHub.Services.Email
 {
     /// <summary>Sends an email message (implemented with MailKit).</summary>
     public interface IEmailSender

@@ -1,8 +1,10 @@
-# Event Booking System
+# EventHub
+
+An event booking system built with ASP.NET Core.
 
 ## Description
 
-The Event Booking System is a web application designed to facilitate the booking and management of events. It provides users with the ability to browse, book, and manage event reservations seamlessly.
+EventHub is a web application designed to facilitate the booking and management of events. It provides users with the ability to browse, book, and manage event reservations seamlessly.
 
 ## Features
 
@@ -71,8 +73,8 @@ Requirements: [Docker Desktop](https://www.docker.com/products/docker-desktop/) 
 Nothing else is needed: no .NET SDK and no SQL Server.
 
 ```bash
-git clone https://github.com/TIGER779/AreebTechnologyTask.git
-cd AreebTechnologyTask/AreebTechnologyTask
+git clone https://github.com/TIGER779/Event-Management-System.git
+cd Event-Management-System/EventHub
 cp .env.example .env          # then open .env and set your own DB_PASSWORD and JWT_KEY
 docker compose up --build
 ```
@@ -100,8 +102,8 @@ Data is kept in Docker volumes. `docker compose down` stops everything, and `doc
 Requirements: [.NET 9 SDK](https://dotnet.microsoft.com/download) and SQL Server **LocalDB** (installed with Visual Studio).
 
 ```bash
-git clone https://github.com/TIGER779/AreebTechnologyTask.git
-cd AreebTechnologyTask/AreebTechnologyTask
+git clone https://github.com/TIGER779/Event-Management-System.git
+cd Event-Management-System/EventHub
 dotnet run
 ```
 

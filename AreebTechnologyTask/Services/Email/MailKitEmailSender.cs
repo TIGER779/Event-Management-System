@@ -3,7 +3,7 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace AreebTechnologyTask.Services.Email
+namespace EventHub.Services.Email
 {
     /// <summary>
     /// Sends emails with MailKit, Microsoft's recommended library for SMTP in .NET.

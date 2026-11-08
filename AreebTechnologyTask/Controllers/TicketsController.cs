@@ -1,10 +1,10 @@
-using AreebTechnologyTask.Data;
-using AreebTechnologyTask.Services.Tickets;
+using EventHub.Data;
+using EventHub.Services.Tickets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace AreebTechnologyTask.Controllers
+namespace EventHub.Controllers
 {
     /// <summary>The page a ticket's QR code opens: tells the entrance staff whether the ticket is valid.</summary>
     [AllowAnonymous]

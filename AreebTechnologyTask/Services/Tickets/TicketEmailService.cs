@@ -1,13 +1,13 @@
 using System.Globalization;
-using AreebTechnologyTask.Data;
-using AreebTechnologyTask.Services.Email;
+using EventHub.Data;
+using EventHub.Services.Email;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Utils;
 using static System.Net.WebUtility;
 
-namespace AreebTechnologyTask.Services.Tickets
+namespace EventHub.Services.Tickets
 {
     /// <summary>Builds and sends the booking confirmation email with the ticket attached.</summary>
     public class TicketEmailService
@@ -105,7 +105,7 @@ namespace AreebTechnologyTask.Services.Tickets
             Check your ticket: {t.VerifyUrl}
             Your bookings: {MyBookingsUrl}
 
-            Event Booking
+            EventHub
             """;
 
         // Emails use tables and inline styles, because many email apps (Gmail, Outlook) ignore <style> blocks.
@@ -158,7 +158,7 @@ namespace AreebTechnologyTask.Services.Tickets
                           <div style="color:#6C757D;font-size:12px;margin-top:12px;">Open the attached <strong>add-to-calendar.ics</strong> file to add this event to your calendar.</div>
                         </td></tr>
                         <tr><td style="background:#F8F9FA;padding:14px 28px;color:#6C757D;font-size:12px;border-top:1px solid #E1E6EB;">
-                          You received this email because you booked a ticket on Event Booking.
+                          You received this email because you booked a ticket on EventHub.
                           <a href="{HtmlEncode(t.VerifyUrl)}" style="color:#1F6FA8;">Check this ticket</a>
                         </td></tr>
                       </table>

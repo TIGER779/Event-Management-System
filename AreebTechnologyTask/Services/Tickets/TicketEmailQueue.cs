@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace AreebTechnologyTask.Services.Tickets
+namespace EventHub.Services.Tickets
 {
     /// <summary>
     /// In-memory queue of bookings whose ticket email still has to be sent.

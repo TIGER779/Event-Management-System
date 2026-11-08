@@ -10,7 +10,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AreebTechnologyTask</title>
+    <title>@ViewData["Title"] - EventHub</title>
     @* Pages can set ViewData["Description"]; otherwise this site-wide description is used. *@
     <meta name="description" content="@(ViewData["Description"] as string ?? "Discover and book upcoming events: tech conferences, music festivals, food expos, sports tournaments, art exhibitions and business summits.")" />
 
@@ -22,7 +22,7 @@
        by MapStaticAssets) instead of third-party CDNs, so the browser needs no extra connections. *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/AreebTechnologyTask.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EventHub.styles.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
 
     @* Font Awesome reduced to the icons this site uses (about 3 KB instead of about 170 KB).
@@ -42,7 +42,7 @@
                 else
                 {
                     <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                        <i class="fas fa-home me-2"></i>AreebTechnologyTask
+                        <i class="fas fa-home me-2"></i>EventHub
                     </a>
                 }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -101,7 +101,7 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-6">
-                        &copy; @DateTime.Now.Year - AreebTechnologyTask
+                        &copy; @DateTime.Now.Year - EventHub
                     </div>
                     <div class="col-md-6 text-md-end">
                         <a asp-controller="Home" asp-action="Privacy" class="text-white text-decoration-none">

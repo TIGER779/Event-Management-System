@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AreebTechnologyTask.Services.Tickets
+namespace EventHub.Services.Tickets
 {
     /// <summary>
     /// Creates and checks ticket codes such as "TKT-000123-K7PQ2MXA4Z".

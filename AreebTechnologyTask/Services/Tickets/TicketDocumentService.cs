@@ -5,7 +5,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace AreebTechnologyTask.Services.Tickets
+namespace EventHub.Services.Tickets
 {
     /// <summary>Creates the files that make up a ticket: QR code image, PDF ticket and calendar (.ics) file.</summary>
     public class TicketDocumentService
@@ -133,11 +133,11 @@ namespace AreebTechnologyTask.Services.Tickets
             {
                 "BEGIN:VCALENDAR",
                 "VERSION:2.0",
-                "PRODID:-//Event Booking//Tickets//EN",
+                "PRODID:-//EventHub//Tickets//EN",
                 "CALSCALE:GREGORIAN",
                 "METHOD:PUBLISH",
                 "BEGIN:VEVENT",
-                $"UID:booking-{ticket.BookingId}@event-booking",
+                $"UID:booking-{ticket.BookingId}@eventhub",
                 $"DTSTAMP:{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}",
                 // Event times are stored without a time zone, so they are written as local ("floating") times.
                 $"DTSTART:{ticket.EventDate:yyyyMMdd'T'HHmmss}",

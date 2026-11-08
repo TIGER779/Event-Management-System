@@ -1,4 +1,4 @@
-namespace AreebTechnologyTask.Services.Email
+namespace EventHub.Services.Email
 {
     /// <summary>
     /// Settings from the "Email" section of appsettings.json (or Email__... environment variables).
@@ -11,8 +11,8 @@ namespace AreebTechnologyTask.Services.Email
         /// </summary>
         public string Mode { get; set; } = "Smtp";
 
-        public string FromAddress { get; set; } = "tickets@eventbooking.local";
-        public string FromName { get; set; } = "Event Booking";
+        public string FromAddress { get; set; } = "tickets@eventhub.local";
+        public string FromName { get; set; } = "EventHub";
 
         /// <summary>The site's public address, used for links and QR codes in emails (no trailing slash).</summary>
         public string PublicBaseUrl { get; set; } = "https://localhost:5025";

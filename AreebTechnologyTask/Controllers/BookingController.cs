@@ -1,12 +1,12 @@
 ﻿using System.Security.Claims;
-using AreebTechnologyTask.Enums;
+using EventHub.Enums;
 using Microsoft.AspNetCore.Authorization;
-using AreebTechnologyTask.Data;
+using EventHub.Data;
 using Microsoft.AspNetCore.Mvc;
-using AreebTechnologyTask.Services.Tickets;
+using EventHub.Services.Tickets;
 using Microsoft.EntityFrameworkCore;
 
-namespace AreebTechnologyTask.Controllers
+namespace EventHub.Controllers
 {
     [Authorize(Roles = nameof(UserRole.User))]
     public class BookingController : Controller

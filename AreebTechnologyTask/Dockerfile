@@ -1,4 +1,4 @@
-# Builds the Event Booking System into a small production image.
+# Builds EventHub into a small production image.
 # Normally used through docker-compose.yml:  docker compose up --build
 
 # ---------- 1) Build: full .NET SDK ----------
@@ -6,12 +6,12 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Restore NuGet packages first, so this layer is cached until the .csproj changes.
-COPY AreebTechnologyTask.csproj ./
-RUN dotnet restore AreebTechnologyTask.csproj
+COPY EventHub.csproj ./
+RUN dotnet restore EventHub.csproj
 
 # Copy the source and publish a Release build.
 COPY . .
-RUN dotnet publish AreebTechnologyTask.csproj -c Release -o /app/publish --no-restore /p:UseAppHost=false
+RUN dotnet publish EventHub.csproj -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 # ---------- 2) Run: small ASP.NET Core runtime only ----------
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
@@ -29,4 +29,4 @@ RUN mkdir -p /app/keys && chown "$APP_UID" /app/keys
 # Run as the image's built-in non-root user, not as root.
 USER $APP_UID
 
-ENTRYPOINT ["dotnet", "AreebTechnologyTask.dll"]
+ENTRYPOINT ["dotnet", "EventHub.dll"]
