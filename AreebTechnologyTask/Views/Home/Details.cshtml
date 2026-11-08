@@ -11,10 +11,9 @@
 		summary = summary.Substring(0, cut > 0 ? cut : 97).TrimEnd(',', '.', ';', ':', '!', '-') + "...";
 	}
 	ViewData["Description"] = $"{Model.Name} on {Model.Date:MMMM d, yyyy} at {Model.Venue}. {summary}";
-	var bookedEventIds = ViewBag.BookedEventIds as List<int> ?? new List<int>();
-	var token = Context.Request.Cookies["JwtToken"];
-	bool isLoggedIn = !string.IsNullOrEmpty(token);
-	string userRole = null;
+	bool isBooked = ViewBag.IsBooked as bool? ?? false;
+	bool isLoggedIn = User.Identity?.IsAuthenticated == true;
+	bool isAdmin = User.IsInRole(nameof(UserRole.Admin));
 }
 <!-- Event Details Section Begin -->
 <h2 class="mb-4 text-primary">Event Details</h2>
@@ -58,8 +57,17 @@
 						<!-- Action Buttons -->
 						<div class="d-flex justify-content-between mt-4">
 							<a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary w-45">⬅️ Back to Events</a>
-							@if (isLoggedIn)
+							@if (isBooked)
 							{
+								<span class="btn btn-success w-45 disabled">Booked</span>
+							}
+							else if (isAdmin)
+							{
+								<span class="btn btn-outline-secondary w-45 disabled">Admins can't book events</span>
+							}
+							else if (isLoggedIn)
+							{
+								@* asp-action adds the anti-forgery token, which BookEvent requires. *@
 								<form asp-action="BookEvent" asp-controller="Home" method="post">
 									<input type="hidden" name="eventId" value="@Model.Id" />
 									<button type="submit" class="btn btn-success w-45">Book Now</button>

@@ -82,6 +82,18 @@ dotnet user-secrets set "ConnectionStrings:Default" "Server=.\SQLEXPRESS;Databas
 
 An existing database created by the migrations keeps its data; sample data is only added to an empty database.
 
+#### JWT signing key
+
+The key that signs login tokens is a secret, so it is not in `appsettings.json`. In Development the app
+uses a temporary random key if none is set (logins end when the app restarts). To keep logins across
+restarts, set your own key once:
+
+```powershell
+dotnet user-secrets set "Jwt:Key" "$([Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(64)))"
+```
+
+Outside Development the app does not start without `Jwt:Key` (or the `Jwt__Key` environment variable).
+
 ### Sample accounts
 
 | Role  | Email               | Password   |

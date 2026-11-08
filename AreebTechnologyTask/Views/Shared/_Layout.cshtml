@@ -1,14 +1,8 @@
 ﻿@{
-    var token = Context.Request.Cookies["JwtToken"];
-    bool isLoggedIn = !string.IsNullOrEmpty(token);
-    string userRole = null;
-    
-    if (isLoggedIn)
-    {
-        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadToken(token) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
-        userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value;
-    }
+    // From the validated login token: an expired or tampered cookie counts as logged out.
+    bool isLoggedIn = User.Identity?.IsAuthenticated == true;
+    bool isAdmin = User.IsInRole(nameof(UserRole.Admin));
+    bool isUser = User.IsInRole(nameof(UserRole.User));
 }
 
 <!DOCTYPE html>
@@ -39,7 +33,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                @if (isLoggedIn && userRole == "Admin")
+                @if (isAdmin)
                 {
                     <a class="navbar-brand" asp-controller="Admin" asp-action="AdminPanel">
                         <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
@@ -60,7 +54,7 @@
                     <ul class="navbar-nav ms-auto">
                         @if (isLoggedIn)
                         {
-                            @if (userRole == "User")
+                            @if (isUser)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Booking" asp-action="MyBookings">

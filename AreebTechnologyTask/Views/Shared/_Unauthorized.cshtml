@@ -1,6 +1,7 @@
 @{
     Layout = null;
-    var userRole = ViewData["UserRole"] as string;
+    // The role comes from the validated login token.
+    var userRole = User.IsInRole(nameof(UserRole.Admin)) ? "Admin" : "User";
     var returnUrl = userRole == "Admin" ? "/Admin/AdminPanel" : "/";
 }
 

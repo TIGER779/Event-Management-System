@@ -1,12 +1,13 @@
 ﻿using System.Security.Claims;
-using AreebTechnologyTask.Authorization;
+using AreebTechnologyTask.Enums;
+using Microsoft.AspNetCore.Authorization;
 using AreebTechnologyTask.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AreebTechnologyTask.Controllers
 {
-    [AuthorizeRoles("User")]
+    [Authorize(Roles = nameof(UserRole.User))]
     public class BookingController : Controller
     {
         private readonly AppDbContext _context;

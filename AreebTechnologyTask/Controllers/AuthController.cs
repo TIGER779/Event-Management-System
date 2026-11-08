@@ -19,6 +19,10 @@ namespace AreebTechnologyTask.Controllers
         private readonly IConfiguration _configuration;
         private readonly TimeSpan _tokenLifetime = TimeSpan.FromHours(1); // JWT token lifetime
 
+        // Used when the email does not exist, so a failed login takes the same time either way
+        // (otherwise the response time would reveal which emails are registered).
+        private static readonly string DummyPasswordHash = BCrypt.Net.BCrypt.HashPassword("not-a-real-password");
+
 
         public AuthController(AppDbContext context, IConfiguration configuration)
         {
@@ -26,38 +30,24 @@ namespace AreebTechnologyTask.Controllers
             _configuration = configuration;
         }
 
+        // Already logged in? Go to the right start page instead of showing Login/Register again.
+        private IActionResult? RedirectIfLoggedIn()
+        {
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                return null;
+            }
+            return User.IsInRole(nameof(UserRole.Admin))
+                ? RedirectToAction("AdminPanel", "Admin")
+                : RedirectToAction("Index", "Home");
+        }
+
         // GET: /Auth/Login
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Login()
         {
-            // Check if user is already logged in
-            var token = Request.Cookies["JwtToken"];
-            if (!string.IsNullOrEmpty(token))
-            {
-                try
-                {
-                    var handler = new JwtSecurityTokenHandler();
-                    var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
-                    var userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-
-                    // Redirect based on role
-                    if (userRole == UserRole.Admin.ToString())
-                    {
-                        return RedirectToAction("AdminPanel", "Admin");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                catch
-                {
-                    // If token is invalid, clear it and show login page
-                    Response.Cookies.Delete("JwtToken");
-                }
-            }
-            return View();
+            return RedirectIfLoggedIn() ?? View();
         }
 
         // POST: /Auth/Login
@@ -66,17 +56,15 @@ namespace AreebTechnologyTask.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto request, string? returnUrl)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var email = request.Email?.Trim() ?? string.Empty;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user == null)
+            // One message for "unknown email" and "wrong password", so attackers cannot find out
+            // which emails are registered.
+            var passwordOk = BCrypt.Net.BCrypt.Verify(request.Password ?? string.Empty, user?.HashedPassword ?? DummyPasswordHash);
+            if (user == null || !passwordOk)
             {
-                TempData["LoginError"] = "Email not found. Please check your email or register if you don't have an account.";
-                return View(request);
-            }
-
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
-            {
-                TempData["LoginError"] = "Incorrect password. Please try again.";
+                TempData["LoginError"] = "Invalid email or password.";
                 return View(request);
             }
 
@@ -104,6 +92,8 @@ namespace AreebTechnologyTask.Controllers
         }
 
 
+        // Logout works even if the login already expired.
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -146,33 +136,15 @@ namespace AreebTechnologyTask.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            // Check if user is already logged in
-            var token = Request.Cookies["JwtToken"];
-            if (!string.IsNullOrEmpty(token))
-            {
-                try
-                {
-                    var handler = new JwtSecurityTokenHandler();
-                    var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
-                    var userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            return RedirectIfLoggedIn() ?? View();
+        }
 
-                    // Redirect based on role
-                    if (userRole == UserRole.Admin.ToString())
-                    {
-                        return RedirectToAction("AdminPanel", "Admin");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                catch
-                {
-                    // If token is invalid, clear it and show register page
-                    Response.Cookies.Delete("JwtToken");
-                }
-            }
-            return View();
+        // GET: /Auth/AccessDenied - shown when a logged-in user opens a page their role cannot use.
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View("_Unauthorized");
         }
 
         // POST: /Auth/Register
@@ -191,10 +163,11 @@ namespace AreebTechnologyTask.Controllers
                 }
             }
 
-            // Check if the user already exists
-            if (_context.Users.Any(u => u.Email == request.Email && u.Name == request.Name))
+            // One account per email address (the email is what users log in with).
+            var email = request.Email?.Trim() ?? string.Empty;
+            if (await _context.Users.AnyAsync(u => u.Email == email))
             {
-                ModelState.AddModelError("", "User already exists.");
+                ModelState.AddModelError("", "An account with this email already exists.");
                 return View(request);
             }
 
@@ -204,7 +177,7 @@ namespace AreebTechnologyTask.Controllers
             var user = new User
             {
                 Name = request.Name,
-                Email = request.Email,
+                Email = email,
                 HashedPassword = passwordHash,
                 Address = request.Address,
                 Phone = request.Phone,

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AreebTechnologyTask.Data;
 using AreebTechnologyTask.Enums;
@@ -20,71 +19,38 @@ namespace AreebTechnologyTask.Controllers
             _context = context;
             _logger = logger;
         }
+        // The logged-in user's ID from the validated JWT (0 when not logged in).
+        private int CurrentUserId =>
+            int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : 0;
+
+        // IDs of the events the current user has booked (empty when not logged in).
+        private Task<List<int>> BookedEventIdsAsync() =>
+            _context.Bookings
+                .Where(b => b.UserId == CurrentUserId)
+                .Select(b => b.EventId)
+                .ToListAsync();
+
         // Display all events on the home page
         public async Task<IActionResult> Index(string returnUrl)
         {
             var events = await _context.Events.ToListAsync();
 
-            // Check if the user is authenticated via the JWT token
-            var token = Request.Cookies["JwtToken"];
-            List<int> bookedEventIds = new List<int>();
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                var userId = GetUserIdFromToken(token); // extract user ID from token
-                bookedEventIds = await _context.Bookings
-                    .Where(b => b.UserId == userId)
-                    .Select(b => b.EventId)
-                    .ToListAsync();
-            }
-
-            ViewBag.BookedEventIds = bookedEventIds; // Pass the list of booked event IDs
-            ViewBag.JwtToken = token; // Pass the JWT token
-
+            ViewBag.BookedEventIds = await BookedEventIdsAsync(); // Pass the list of booked event IDs
             ViewBag.ReturnUrl = returnUrl ?? Url.Content("~/");
 
             return View(events);
         }
 
 
-        // extract user ID from JWT token
-        private int GetUserIdFromToken(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
-
-            if (jwtToken != null)
-            {
-                var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                return string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
-            }
-
-            return 0;
-        }
-
-
         // event booking
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken] // blocks forged booking requests sent from other websites
         public async Task<IActionResult> BookEvent(int eventId)
         {
-            var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+            var isAjax = Request.Headers.XRequestedWith == "XMLHttpRequest";
 
-            var token = Request.Cookies["JwtToken"];
-            if (string.IsNullOrEmpty(token))
-            {
-                if (isAjax)
-                    return Json(new { success = false, message = "Unauthorized" });
-
-                return RedirectToAction("Login", "Auth", new { returnUrl = Url.Action("Index", "Home") });
-            }
-
-            // Check if user is admin
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
-            var userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-
-            if (userRole == UserRole.Admin.ToString())
+            if (User.IsInRole(nameof(UserRole.Admin)))
             {
                 if (isAjax)
                     return Json(new { success = false, message = "Admin cannot book events." });
@@ -93,13 +59,21 @@ namespace AreebTechnologyTask.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var userId = GetUserIdFromToken(token);
+            var userId = CurrentUserId;
             if (userId == 0)
             {
                 if (isAjax)
                     return Json(new { success = false, message = "Invalid token" });
 
                 return RedirectToAction("Login", "Auth", new { returnUrl = Url.Action("Index", "Home") });
+            }
+
+            if (!await _context.Events.AnyAsync(e => e.Id == eventId))
+            {
+                if (isAjax)
+                    return Json(new { success = false, message = "Event not found." });
+
+                return NotFound();
             }
 
             var existingBooking = await _context.Bookings
@@ -150,6 +124,7 @@ namespace AreebTechnologyTask.Controllers
                 return NotFound();
             }
 
+            ViewBag.IsBooked = (await BookedEventIdsAsync()).Contains(id);
             return View(eventItem); //Views/Event/Details.cshtml
         }
 
