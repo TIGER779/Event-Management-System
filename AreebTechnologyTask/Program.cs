@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using AreebTechnologyTask.Enums;
+using AreebTechnologyTask.Services.Email;
+using AreebTechnologyTask.Services.Tickets;
 
 namespace AreebTechnologyTask
 {
@@ -38,6 +40,17 @@ namespace AreebTechnologyTask
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Confirmation emails with the ticket (PDF + QR code + calendar file).
+            // QuestPDF is free under its Community license for individuals and small companies.
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email"));
+            builder.Services.AddSingleton<IEmailSender, MailKitEmailSender>();
+            builder.Services.AddSingleton<TicketCodeService>();
+            builder.Services.AddSingleton<TicketDocumentService>();
+            builder.Services.AddSingleton<TicketEmailQueue>();
+            builder.Services.AddScoped<TicketEmailService>();
+            builder.Services.AddHostedService<TicketEmailWorker>();
 
             // Add session support
             builder.Services.AddSession(options =>

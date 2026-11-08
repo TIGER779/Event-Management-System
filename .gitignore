@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 # Docker Compose secrets (copy .env.example to .env)
 .env
+
+# Emails saved by Email:Mode = PickupDirectory
+AreebTechnologyTask/App_Data/

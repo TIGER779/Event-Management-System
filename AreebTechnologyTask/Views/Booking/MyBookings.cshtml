@@ -1,5 +1,11 @@
 ﻿@model IEnumerable<Booking>
 
+@{
+	ViewData["Title"] = "My Bookings";
+	var ticketCodes = ViewBag.TicketCodes as Dictionary<int, string> ?? new Dictionary<int, string>();
+	var verifyBaseUrl = ViewBag.VerifyBaseUrl as string ?? "";
+}
+
 <h2>My Bookings</h2>
 
 @if (TempData["Success"] != null)
@@ -50,9 +56,20 @@ else
 						<td>
 							<!--Ticket-->
 							<div class="btn-group" role="group">
-								<button type="button" class="btn btn-primary btn-sm me-2 ticket-button" onclick="saveAsTicket(@booking.Id)">
+								<button type="button" class="btn btn-primary btn-sm me-2 ticket-button" onclick="saveAsTicket(@booking.Id)"
+										data-ticket-code="@ticketCodes.GetValueOrDefault(booking.Id)">
 									<i class="fas fa-ticket-alt me-1"></i> Ticket
 								</button>
+								<a asp-action="TicketPdf" asp-route-id="@booking.Id" class="btn btn-outline-primary btn-sm me-2"
+								   title="Download PDF ticket">
+									<i class="fas fa-file-pdf me-1" aria-hidden="true"></i> PDF
+								</a>
+								<form asp-action="ResendTicket" method="post" class="d-inline me-2">
+									<input type="hidden" name="bookingId" value="@booking.Id" />
+									<button type="submit" class="btn btn-outline-primary btn-sm" title="Email my ticket again">
+										<i class="fas fa-envelope me-1" aria-hidden="true"></i> Email
+									</button>
+								</form>
 								<form asp-action="CancelBooking" method="post" class="d-inline"
 									  onsubmit="return confirm('Are you sure you want to cancel this booking?');">
 									@Html.AntiForgeryToken()
@@ -138,8 +155,8 @@ else
 				const price = row.find('td').eq(3).text().trim();
 				const bookedOn = row.find('td').eq(4).text().trim();
 
-				// Generate ticket ID
-				const ticketId = generateTicketId();
+				// The signed ticket ID made by the server (the same one as in the email and PDF ticket).
+				const ticketId = $(`button[onclick="saveAsTicket(${bookingId})"]`).data('ticket-code') || generateTicketId();
 
 				const ticketTemplate = document.getElementById('ticketTemplate');
 				ticketTemplate.style.display = 'block';
@@ -151,15 +168,8 @@ else
 				document.getElementById('ticketPrice').textContent = price;
 				document.getElementById('ticketBookedOn').textContent = bookedOn;
 
-				// Create QR code data
-				const qrData = JSON.stringify({
-					ticketId: ticketId,
-					eventName: eventName,
-					date: date,
-					venue: venue,
-					price: price,
-					bookedOn: bookedOn
-				});
+				// QR code = link to the ticket-check page. The signed ID cannot be faked, unlike plain ticket data.
+				const qrData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(verifyBaseUrl)) + encodeURIComponent(ticketId);
 
 				// Clear previous QR code
 				const qrcodeDiv = document.getElementById('qrcode');

@@ -10,6 +10,8 @@ The Event Booking System is a web application designed to facilitate the booking
 -   Event browsing and booking
 -   Booking and reservation management
 -   Admin panel for event management
+-   Booking confirmation email with a PDF ticket, a QR code and a calendar (.ics) file
+-   Signed ticket codes and a "Check ticket" page that the QR code opens (rejects fake or cancelled tickets)
 
 ## DEMO Images
 
@@ -44,10 +46,15 @@ The Event Booking System is a web application designed to facilitate the booking
 -   BCrypt.Net for password hashing
 -   JWT for authentication
 -   BouncyCastle for cryptographic operations
+-   MailKit for sending emails, QuestPDF for PDF tickets, QRCoder for QR codes
+-   Docker and Docker Compose
 
 ### NuGet Packages
 
 -   BCrypt.Net-Next 4.0.3
+-   MailKit 4.18.2
+-   QuestPDF 2026.9.1 (Community license)
+-   QRCoder 1.8.1
 -   Microsoft.AspNetCore.Authentication.JwtBearer 9.0.4
 -   Microsoft.EntityFrameworkCore.SqlServer 9.0.2
 -   Microsoft.EntityFrameworkCore.Tools 9.0.2
@@ -134,6 +141,42 @@ Outside Development the app does not start without `Jwt:Key` (or the `Jwt__Key` 
 
 The sample accounts use `example.com`, a domain reserved for examples, so no email can reach a real person.
 Register with your own email address to receive emails yourself.
+
+### Booking confirmation emails
+
+After a booking, the app emails the user:
+
+-   the event details and picture, and a **QR code** to show at the entrance
+-   a **PDF ticket** (`ticket-TKT-000123-XXXXXXXXXX.pdf`)
+-   a **calendar file** (`add-to-calendar.ics`) for Google, Outlook or Apple Calendar
+
+The email is sent in the background, so booking stays fast and still succeeds if the mail server is down.
+In **My Bookings**, users can download the PDF ticket or have it emailed again.
+
+The ticket ID ends with a signature (HMAC-SHA256) that only the server can create. The QR code opens
+`/Tickets/Verify?code=...`, which shows **Valid ticket**, or **Not valid** for fake, edited or cancelled tickets.
+Ticket signatures are derived from `Jwt:Key`, or from `Tickets:SigningKey` if you set one; changing that key invalidates
+existing tickets.
+
+Where emails go is set in the `Email` section of `appsettings.json`:
+
+| Setup | How to read the emails |
+|-------|------------------------|
+| Docker (`docker compose up`) | Mailpit inbox at http://localhost:8025 (already configured) |
+| `dotnet run` (default) | Start only Mailpit with `docker compose up -d mail`, then open http://localhost:8025 |
+| `dotnet run` without Docker | `dotnet user-secrets set "Email:Mode" "PickupDirectory"`: emails are saved as `.eml` files in `App_Data/emails` |
+
+To send **real** emails, for example with Gmail and an [App Password](https://support.google.com/accounts/answer/185833),
+keep the credentials in user-secrets:
+
+```bash
+dotnet user-secrets set "Email:Smtp:Host" "smtp.gmail.com"
+dotnet user-secrets set "Email:Smtp:Port" "587"
+dotnet user-secrets set "Email:Smtp:Security" "StartTls"
+dotnet user-secrets set "Email:Smtp:Username" "you@gmail.com"
+dotnet user-secrets set "Email:Smtp:Password" "<16-character app password>"
+dotnet user-secrets set "Email:FromAddress" "you@gmail.com"
+```
 
 ### Database changes (developers)
 

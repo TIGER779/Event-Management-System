@@ -1,10 +1,18 @@
 ﻿@{
     ViewData["Title"] = "Congratulations";
     var eventName = ViewContext.HttpContext.Request.Query["eventName"];
+    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
 }
 
 <div class="text-center mt-5">
     <h1>🎉 Congratulations!</h1>
     <p class="lead">You have successfully booked <strong>@eventName</strong>.</p>
+    @if (!string.IsNullOrEmpty(email))
+    {
+        <p class="text-muted">
+            <i class="fas fa-ticket-alt me-1" aria-hidden="true"></i>
+            We're emailing your ticket (PDF, QR code and calendar file) to <strong>@email</strong>.
+        </p>
+    }
     <a class="btn btn-primary mt-3" asp-controller="Booking" asp-action="MyBookings">View My Bookings</a>
 </div>

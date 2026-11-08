@@ -30,7 +30,7 @@ services:
       Email__Mode: Smtp
       Email__Smtp__Host: mail
       Email__Smtp__Port: "1025"
-      Email__Smtp__UseSsl: "false"
+      Email__Smtp__Security: None
       Email__FromAddress: tickets@eventbooking.local
       Email__FromName: Event Booking
       Email__PublicBaseUrl: http://localhost:5025
@@ -65,7 +65,8 @@ services:
   mail:
     image: axllent/mailpit:v1.32
     ports:
-      - "8025:8025"
+      - "127.0.0.1:8025:8025"   # web inbox
+      - "127.0.0.1:1025:1025"   # SMTP, so `dotnet run` on your PC can send to it too (only reachable from this PC)
     restart: unless-stopped
 
 volumes:

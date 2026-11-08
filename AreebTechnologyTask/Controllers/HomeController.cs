@@ -3,6 +3,7 @@ using System.Security.Claims;
 using AreebTechnologyTask.Data;
 using AreebTechnologyTask.Enums;
 using AreebTechnologyTask.Models;
+using AreebTechnologyTask.Services.Tickets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +14,13 @@ namespace AreebTechnologyTask.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext _context;
+        private readonly TicketEmailQueue _ticketEmails;
 
-        public HomeController(AppDbContext context, ILogger<HomeController> logger)
+        public HomeController(AppDbContext context, ILogger<HomeController> logger, TicketEmailQueue ticketEmails)
         {
             _context = context;
             _logger = logger;
+            _ticketEmails = ticketEmails;
         }
         // The logged-in user's ID from the validated JWT (0 when not logged in).
         private int CurrentUserId =>
@@ -97,6 +100,9 @@ namespace AreebTechnologyTask.Controllers
 
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
+
+            // Send the confirmation email with the ticket in the background (the page does not wait for it).
+            _ticketEmails.Enqueue(booking.Id);
 
             var bookedEvent = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId);
 
