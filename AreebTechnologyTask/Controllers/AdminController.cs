@@ -1,12 +1,13 @@
-﻿using AreebTechnologyTask.Data;
-using AreebTechnologyTask.Models;
+﻿using EventHub.Data;
+using EventHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AreebTechnologyTask.Authorization;
+using EventHub.Enums;
+using Microsoft.AspNetCore.Authorization;
 
-namespace AreebTechnologyTask.Controllers
+namespace EventHub.Controllers
 {
-    [AuthorizeRoles("Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public class AdminController : Controller
     {
         private readonly AppDbContext _context;

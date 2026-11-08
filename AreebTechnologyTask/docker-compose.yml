@@ -1,0 +1,77 @@
+# Runs the whole system with one command:
+#
+#     cp .env.example .env      (once; then set your own passwords in .env)
+#     docker compose up --build
+#
+#   Website:        http://localhost:5025
+#   Email inbox:    http://localhost:8025   (Mailpit catches every email the app sends)
+#
+# Stop with Ctrl+C, or `docker compose down`. Data stays in Docker volumes;
+# `docker compose down -v` also deletes the database.
+
+name: eventhub
+
+services:
+  # ---- The website (built from ./Dockerfile) ----
+  web:
+    build: .
+    image: eventhub-web
+    ports:
+      - "5025:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: "Server=db;Database=Event_Booking_System;User Id=sa;Password=${DB_PASSWORD:?Set DB_PASSWORD in .env};TrustServerCertificate=True"
+      Jwt__Key: "${JWT_KEY:?Set JWT_KEY in .env}"
+      # Local Docker serves plain HTTP, so allow the login cookie without HTTPS.
+      # A real server must use HTTPS (e.g. a reverse proxy in front of this container) and keep this true.
+      Auth__CookieRequiresHttps: "false"
+      DataProtection__KeysPath: /app/keys
+      # Emails go to Mailpit (see the "mail" service) unless the SMTP_* values in .env point to a real
+      # mail server such as Gmail.
+      Email__Mode: Smtp
+      Email__Smtp__Host: "${SMTP_HOST:-mail}"
+      Email__Smtp__Port: "${SMTP_PORT:-1025}"
+      Email__Smtp__Security: "${SMTP_SECURITY:-None}"
+      Email__Smtp__Username: "${SMTP_USERNAME:-}"
+      Email__Smtp__Password: "${SMTP_PASSWORD:-}"
+      Email__FromAddress: "${EMAIL_FROM:-tickets@eventhub.local}"
+      Email__FromName: EventHub
+      Email__PublicBaseUrl: http://localhost:5025
+    volumes:
+      - keys:/app/keys
+    depends_on:
+      db:
+        condition: service_healthy
+      mail:
+        condition: service_started
+    restart: unless-stopped
+
+  # ---- SQL Server 2022 (Express edition, free) ----
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-CU26-ubuntu-22.04
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_SA_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in .env}"
+    volumes:
+      - sqldata:/var/opt/mssql
+    # The database port is not published to your PC, so it never clashes with a local SQL Server.
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    restart: unless-stopped
+
+  # ---- Mailpit: a fake mail server with a web inbox, so no email reaches a real address ----
+  mail:
+    image: axllent/mailpit:v1.32
+    ports:
+      - "127.0.0.1:8025:8025"   # web inbox
+      - "127.0.0.1:1025:1025"   # SMTP, so `dotnet run` on your PC can send to it too (only reachable from this PC)
+    restart: unless-stopped
+
+volumes:
+  sqldata:
+  keys:

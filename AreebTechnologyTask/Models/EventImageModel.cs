@@ -1,4 +1,4 @@
-namespace AreebTechnologyTask.Models
+namespace EventHub.Models
 {
     /// <summary>
     /// Options for the shared Views/Shared/_EventImage.cshtml partial.

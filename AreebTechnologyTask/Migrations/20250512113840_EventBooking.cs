@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace AreebTechnologyTask.Migrations
+namespace EventHub.Migrations
 {
     /// <inheritdoc />
     public partial class EventBooking : Migration

@@ -4,16 +4,8 @@
     ViewData["Title"] = "Upcoming Events";
     ViewData["Description"] = "Browse upcoming events and book your ticket online: technology, music, food, sports, art and business events.";
     var bookedEventIds = ViewBag.BookedEventIds as List<int> ?? new List<int>();
-    var token = Context.Request.Cookies["JwtToken"];
-    bool isLoggedIn = !string.IsNullOrEmpty(token);
-    string userRole = null;
-    
-    if (isLoggedIn)
-    {
-        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadToken(token) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
-        userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value;
-    }
+    bool isLoggedIn = User.Identity?.IsAuthenticated == true;
+    bool isAdmin = User.IsInRole(nameof(UserRole.Admin));
 }
 
 <h2>Upcoming Events</h2>
@@ -64,9 +56,14 @@
                         {
                             <span class="btn btn-success w-100 disabled">Booked</span>
                         }
-                        else if (isLoggedIn && userRole != "Admin")
+                        else if (isAdmin)
                         {
-                            <form method="post" action="@Url.Action("BookEvent", "Home")" class="book-form position-relative" style="z-index: 2;">
+                            <span class="btn btn-outline-secondary w-100 disabled">Admins can't book events</span>
+                        }
+                        else if (isLoggedIn)
+                        {
+                            @* asp-action makes the form include the anti-forgery token, which BookEvent requires. *@
+                            <form asp-controller="Home" asp-action="BookEvent" method="post" class="book-form position-relative" style="z-index: 2;">
                                 <input type="hidden" name="eventId" value="@evt.Id" />
                                 <button type="submit" class="btn btn-primary w-100">Book Now</button>
                             </form>
@@ -89,12 +86,12 @@
                 e.preventDefault();
 
                 const form = $(this);
-                const eventId = form.find('input[name="eventId"]').val();
 
                 $.ajax({
                     url: form.attr('action'),
                     type: 'POST',
-                    data: { eventId: eventId },
+                    // serialize() sends eventId and the anti-forgery token (__RequestVerificationToken).
+                    data: form.serialize(),
                     headers: { 'X-Requested-With': 'XMLHttpRequest' },
                     success: function (response) {
                         if (response.success) {
@@ -104,7 +101,12 @@
                             alert(response.message || "Error booking the event.");
                         }
                     },
-                    error: function () {
+                    error: function (xhr) {
+                        if (xhr.status === 401) {
+                            // The login expired: log in again and come back here.
+                            window.location.href = '/Auth/Login?returnUrl=' + encodeURIComponent(location.pathname);
+                            return;
+                        }
                         alert("Error booking the event. Please try again.");
                     }
                 });

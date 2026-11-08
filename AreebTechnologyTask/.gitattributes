@@ -1,0 +1,5 @@
+# Docker files are read inside Linux containers: always keep Unix (LF) line endings.
+Dockerfile          text eol=lf
+.dockerignore       text eol=lf
+docker-compose*.yml text eol=lf
+.env.example        text eol=lf

@@ -1,4 +1,4 @@
-namespace AreebTechnologyTask.Models
+namespace EventHub.Models
 {
     public class ErrorViewModel
     {

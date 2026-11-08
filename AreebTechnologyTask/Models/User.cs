@@ -1,6 +1,6 @@
-﻿using AreebTechnologyTask.Enums;
+﻿using EventHub.Enums;
 
-namespace AreebTechnologyTask.Models
+namespace EventHub.Models
 {
     public class User
     {

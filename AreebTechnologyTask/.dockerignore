@@ -1,0 +1,19 @@
+# Keep the Docker build context small and free of secrets and local build output.
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Secrets and local settings
+.env
+appsettings.*.local.json
+
+# Not needed inside the image
+tools/
+Dockerfile
+docker-compose*.yml
+.dockerignore
+*.md
+database.sql

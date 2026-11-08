@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>77482bea-904e-4e94-b70a-4221ceb50dde</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +14,9 @@
     <None Remove="Views\User\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\css\_Layout.cshtml.css" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="MailKit" Version="4.18.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
@@ -29,14 +27,12 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+		<PackageReference Include="QRCoder" Version="1.8.1" />
+		<PackageReference Include="QuestPDF" Version="2026.9.1" />
 	</ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\Images\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\css\_Layout.cshtml.css" />
   </ItemGroup>
 
 </Project>

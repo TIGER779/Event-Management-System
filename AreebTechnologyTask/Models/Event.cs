@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AreebTechnologyTask.Models
+namespace EventHub.Models
 {
     public class Event
     {

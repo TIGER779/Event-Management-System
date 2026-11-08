@@ -1,0 +1,60 @@
+@model Booking?
+@{
+    var status = ViewBag.Status as string;
+    var code = ViewBag.Code as string;
+
+    // Only the first name and last initial are shown ("John D."), so the page reveals little about the holder.
+    string ShortName(string fullName)
+    {
+        var parts = (fullName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length switch
+        {
+            0 => "",
+            1 => parts[0],
+            _ => $"{parts[0]} {char.ToUpperInvariant(parts[^1][0])}."
+        };
+    }
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <h1 class="h3 mb-4">Check Ticket</h1>
+
+        @if (status == "valid" && Model != null)
+        {
+            <div class="alert alert-success d-flex align-items-center" role="status">
+                <i class="fas fa-calendar-check fa-fw me-2" aria-hidden="true"></i>
+                <strong>Valid ticket</strong>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5 card-title">@Model.Event.Name</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Date</dt>
+                        <dd class="col-sm-8">@Model.Event.Date.ToString("dddd, MMMM d, yyyy h:mm tt", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</dd>
+                        <dt class="col-sm-4">Venue</dt>
+                        <dd class="col-sm-8">@Model.Event.Venue</dd>
+                        <dt class="col-sm-4">Ticket holder</dt>
+                        <dd class="col-sm-8">@ShortName(Model.User.Name)</dd>
+                        <dt class="col-sm-4">Ticket ID</dt>
+                        <dd class="col-sm-8"><code>@code</code></dd>
+                    </dl>
+                </div>
+            </div>
+        }
+        else if (status == "cancelled")
+        {
+            <div class="alert alert-warning" role="status">
+                <strong>Not valid:</strong> this ticket's booking was cancelled.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger" role="status">
+                <strong>Not valid:</strong> this is not a genuine ticket code.
+            </div>
+        }
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary mt-3">Back to events</a>
+    </div>
+</div>
