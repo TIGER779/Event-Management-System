@@ -32,7 +32,8 @@
         <div class="col">
             <a href="@Url.Action("Details", "Home", new { id = evt.Id })" style="text-decoration: none; color: inherit;">
                 <div class="card h-100 shadow-sm">
-                    <img src="/Images/@evt.ImageUrl" class="card-img-top" alt="@evt.Name" style="height:200px; object-fit:cover;">
+                    <img src="@evt.DisplayImageUrl" class="card-img-top" alt="@evt.Name" style="height:200px; object-fit:cover;"
+                         onerror="this.onerror=null;this.src='/Images/placeholder.svg';">
                     <div class="card-body">
                         <h5 class="card-title">@evt.Name</h5>
                         <p class="card-text">
